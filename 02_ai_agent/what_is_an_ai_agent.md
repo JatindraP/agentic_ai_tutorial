@@ -22,7 +22,7 @@ An **AI Agent** is an autonomous entity that perceives its environment through s
 ```mermaid
 graph TD
     A[Environment] --> B{Perception Module}
-    B --> C[Memory Module}
+    B --> C[Memory Module]
     B --> D{Reasoning/Planning Module}
     C --> D
     D --> E[Action Module]
