@@ -1,6 +1,8 @@
 from openai import OpenAI
 from dotenv import load_dotenv
 import requests
+from pydantic import BaseModel,Field
+from typing import Optional
 import json
 
 load_dotenv()
@@ -95,6 +97,12 @@ available_tools = {
     "get_weather": get_weather
 }
 
+class LlmOutputFormat(BaseModel):
+    step: str = Field(..., description="The step in the process. It can be START, PLAN, TOOL, OBTAINED_TOOL_RESULT, or OUTPUT.")
+    content: Optional[str] = Field(None, description="The content of the output")
+    tool_name: Optional[str] = Field(None, description="The name of the tool to be used if step is TOOL")
+    input: Optional[str] = Field(None, description="The input for the tool if step is TOOL")
+
 def main():
     message_hist = [
     {"role":"system","content":SYSTEM_PROMPT},
@@ -106,26 +114,26 @@ def main():
             break
         message_hist.append({"role": "user", "content": user_query})
         while True:
-            response = client.chat.completions.create(
+            response = client.chat.completions.parse(
                 model="gpt-4o",
-                response_format={"type": "json_object"},
+                response_format=LlmOutputFormat,
                 messages=message_hist
             )
 
             raw_result = response.choices[0].message.content
             message_hist.append({"role":"assistant","content":raw_result})
-            parsed_result = json.loads(raw_result)
+            parsed_result = response.choices[0].message.parsed
             print("\n")
-            if parsed_result.get("step") == "START":
-                print(f"💫 {parsed_result.get('content')}")
+            if parsed_result.step == "START":
+                print(f"💫 {parsed_result.content}")
                 print("🤖 Let me think step by step ...")
                 continue
-            elif parsed_result.get("step") == "PLAN":
-                print(f"🧠 {parsed_result.get('content')}")
-            
-            elif parsed_result.get("step") == "TOOL":
-                tool_name = parsed_result.get("tool_name")
-                tool_input = parsed_result.get("input")
+            elif parsed_result.step == "PLAN":
+                print(f"🧠 {parsed_result.content}")
+
+            elif parsed_result.step == "TOOL":
+                tool_name = parsed_result.tool_name
+                tool_input = parsed_result.input
                 tool_result = available_tools[tool_name](tool_input)
                 message_hist.append({"role": "developer", "content": json.dumps(
                     {
@@ -138,8 +146,8 @@ def main():
                 print(f"🛠️ {tool_name} tool is used with input '{tool_input}': {tool_result}")
                 continue
 
-            elif parsed_result.get("step") == "OUTPUT":
-                print(f"🤖 {parsed_result.get('content')}")
+            elif parsed_result.step == "OUTPUT":
+                print(f"🤖 {parsed_result.content}")
                 print("✅ All steps completed.")
                 print("😇")
                 break

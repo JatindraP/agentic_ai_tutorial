@@ -1,0 +1,17 @@
+rag:
+  pdf:
+    odia_history_document: 'Odisha_history.pdf'
+  word:
+    odia_history_document: 'Odisha_history.docx'
+
+vectordb:
+  qdrant:
+    url: 'http://localhost:6333'
+    collection:
+      odisha_history_pdf: 'odisha_history_collection'
+
+embedding_model:
+  model_name: 'text-embedding-3-large'
+
+llm_model:
+  openai_model_name: 'gpt-5'
