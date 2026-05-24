@@ -1,3 +1,11 @@
+#Comment for the syncronous processing of the user query
+'''This module handles the chat functionality of the RAG system. 
+It takes the user query, performs similarity search on the vector store to retrieve relevant documents, 
+and then generates a response using the OpenAI language model based on the retrieved context. 
+The response is then printed to the user.
+It a typical Synchronous processing of the user query, 
+where the system waits for the response to be generated before accepting the next user query.'''
+
 from langchain_openai import OpenAIEmbeddings
 from langchain_qdrant import QdrantVectorStore
 from openai import OpenAI

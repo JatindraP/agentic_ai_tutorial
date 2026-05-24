@@ -1,5 +1,23 @@
 services:
+  # ************************************************************ 
+  # *         Vector db in this case it Qdrant,                *             
+  # *  It is used to store the embeddings of the documents     *
+  # *  and perform similarity search based on the user query.  *
+  # ************************************************************
   vector-db:
     image: qdrant/qdrant
     ports:
       - 6333:6333
+
+  # ********************************************************************************************************
+  # *         Valkey(Alternative Of Redis), is required queue the user requests                            *
+  # *                        and process them asynchronously.                                              *
+  # *              It allows the system to handle multiple user queries                                    *
+  # *              concurrently without blocking the main application.                                     *
+  # *  RQ (Redis Queue,Internlly use Redis/Valkey ) is a simple Python library for queueing jobs           *
+  # *           and processing them in the background with workers.                                        *
+  # ********************************************************************************************************
+  valkey:
+    image: valkey/valkey
+    ports:
+      - 6379:6379

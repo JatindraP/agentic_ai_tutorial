@@ -10,6 +10,14 @@ vectordb:
     collection:
       odisha_history_pdf: 'odisha_history_collection'
 
+valkey:
+  host: 'localhost'
+  port: 6379
+
+uvicorn:
+  host: '0.0.0.0'
+  port: 8000
+
 embedding_model:
   model_name: 'text-embedding-3-large'
 
